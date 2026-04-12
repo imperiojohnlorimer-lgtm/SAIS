@@ -31,11 +31,13 @@ export const Sidebar = ({ role, activeTab, setActiveTab, currentUser }) => {
       <div className="p-6 border-b-2 border-gold-400">
         {/* Logo and Branding */}
         <div className="mb-8 pb-6 border-b border-slate-100">
-          <div className="flex items-start gap-4">
-            <img src="/university-seal.jpg" alt="SAIS Logo" className="w-14 h-14 rounded-full shadow-lg flex-shrink-0 border-2 border-gold-400" />
-            <div className="flex-1">
-              <h1 className="font-bold text-2xl leading-tight text-slate-900">SAIS</h1>
-              <p className="text-xs text-maroon-600 font-semibold uppercase tracking-wide">Student Assistant<br/>Information System</p>
+          <div className="flex items-center gap-3">
+            <img src="/university-seal.jpg" alt="SAIS Logo" className="w-12 h-12 rounded-full shadow-lg border-2 border-gold-400 object-contain" />
+            <div className="flex flex-col leading-tight">
+              <span className="text-lg font-bold text-slate-900">SAIS</span>
+              <span className="text-[10px] text-maroon-600 font-semibold uppercase">
+                STUDENT ASSISTANT<br/>INFORMATION SYSTEM
+              </span>
             </div>
           </div>
         </div>

@@ -232,15 +232,26 @@ export const clockOut = async (req, res) => {
       });
     }
 
-    // Simple calculation (assumes format HH:MM AM/PM)
-    const [inTime, inPeriod] = attendance.timeIn.split(' ');
-    const [outTime, outPeriod] = timeOut.split(' ');
-    const [inHour] = inTime.split(':').map(Number);
-    const [outHour] = outTime.split(':').map(Number);
+    // Calculate hours - handle both ISO format and HH:MM AM/PM format
+    const parseTimeToHour = (timeStr) => {
+      // Check if ISO format (contains T)
+      if (timeStr.includes('T')) {
+        const date = new Date(timeStr);
+        return date.getHours();
+      }
+      // Handle HH:MM AM/PM format
+      const [time, period] = timeStr.split(' ');
+      let [hour] = time.split(':').map(Number);
+      if (period === 'PM' && hour !== 12) hour += 12;
+      if (period === 'AM' && hour === 12) hour = 0;
+      return hour;
+    };
+
+    const inHour = parseTimeToHour(attendance.timeIn);
+    const outHour = parseTimeToHour(timeOut);
 
     let totalHours = outHour - inHour;
-    if (inPeriod === 'PM' && outPeriod === 'AM') totalHours = 12 - inHour + outHour;
-    if (inPeriod === 'AM' && outPeriod === 'PM' && outHour < 12) totalHours = outHour + 12 - inHour;
+    if (totalHours < 0) totalHours += 24; // Handle overnight shifts
 
     attendance.timeOut = timeOut;
     attendance.totalHours = Math.max(totalHours, 0);
@@ -277,7 +288,10 @@ export const deleteAttendance = async (req, res) => {
 
     await Attendance.findByIdAndDelete(id);
 
-    res.status(204).send();
+    res.status(200).json({
+      success: true,
+      message: 'Attendance record deleted successfully',
+    });
   } catch (error) {
     res.status(500).json({
       success: false,

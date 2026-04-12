@@ -229,7 +229,7 @@ export const updateSchedule = async (req, res) => {
       
       const canUpdateOthersSchedule = 
         (userRole === 'Admin' && (creatorUser.role === 'Supervisor' || creatorUser.role === 'Student Assistant')) ||
-        (userRole === 'Supervisor' && (creatorUser.role === 'Admin' || creatorUser.role === 'Student Assistant' || schedule.studentId));
+        (userRole === 'Supervisor' && (creatorUser.role === 'Student Assistant' || schedule.studentId));
 
       if (!canUpdateOthersSchedule) {
         return res.status(403).json({
@@ -310,7 +310,7 @@ export const deleteSchedule = async (req, res) => {
       
       const canDeleteOthersSchedule = 
         (userRole === 'Admin' && (creatorUser.role === 'Supervisor' || creatorUser.role === 'Student Assistant')) ||
-        (userRole === 'Supervisor' && (creatorUser.role === 'Admin' || creatorUser.role === 'Student Assistant' || schedule.studentId));
+        (userRole === 'Supervisor' && (creatorUser.role === 'Student Assistant' || schedule.studentId));
 
       if (!canDeleteOthersSchedule) {
         return res.status(403).json({
