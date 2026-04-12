@@ -20,14 +20,13 @@ import { fileURLToPath } from 'url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
-// Load environment variables from .env file in the backend directory
+// Load environment variables
 dotenv.config({ path: path.join(__dirname, '.env') });
 
-// Set custom DNS servers to bypass WiFi restrictions
+// Set custom DNS servers
 dns.setServers(['1.1.1.1', '8.8.8.8']);
 
 const app = express();
-const PORT = process.env.PORT || 5000;
 
 // Middleware
 app.use(cors({
@@ -36,26 +35,8 @@ app.use(cors({
   allowedHeaders: ['Content-Type', 'Authorization'],
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
 }));
-// Increase body size limit to support Base64 encoded profile pictures
 app.use(express.json({ limit: '5mb' }));
 app.use(express.urlencoded({ extended: true, limit: '5mb' }));
-
-// Add connection pool monitoring (non-intrusive)
-const monitorConnectionPool = () => {
-  if (mongoose.connection.readyState === 1) { // Connected
-    try {
-      const client = mongoose.connection.getClient();
-      if (client && client.topology) {
-        const poolSize = client.topology.s.sessionPool?.sessions?.size || 0;
-        if (poolSize > 40) {
-          console.warn(`⚠️ [Connection Pool Warning] High active sessions: ${poolSize}`);
-        }
-      }
-    } catch (e) {
-      // Silently fail if unable to check pool
-    }
-  }
-};
 
 // API Routes
 app.use('/api/auth', authRoutes);
@@ -80,24 +61,14 @@ app.use((req, res) => {
 // Error handler middleware
 app.use(errorHandler);
 
-// Connect to database and start server
-const startServer = async () => {
-  try {
-    await connectDatabase();
-    
-    // Start connection pool monitoring after DB is connected
-    setInterval(monitorConnectionPool, 30000);
-    
-    app.listen(PORT, () => {
-      console.log(`Server is running on port ${PORT}`);
-      console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
-    });
-  } catch (error) {
-    console.error('Failed to start server:', error);
-    process.exit(1);
-  }
-};
+// Connect to database once at cold start
+connectDatabase()
+  .then(() => {
+    console.log('Database connected');
+  })
+  .catch(err => {
+    console.error('Database connection failed:', err);
+  });
 
-startServer();
-
+// Export the app for Vercel
 export default app;
