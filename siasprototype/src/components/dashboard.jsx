@@ -15,7 +15,7 @@ export const Dashboard = () => {
   useEffect(() => {
     const fetchHealth = async () => {
       try {
-        const response = await axios.get('http://localhost:5000/api/health');
+        const response = await axios.get(`${import.meta.env.VITE_API_URL || 'http://localhost:5000/api'}/health`);
         setHealth(response.data);
       } catch (error) {
         console.error('Failed to fetch health status:', error);
@@ -43,7 +43,7 @@ export const Dashboard = () => {
     const fetchDashboardStats = async () => {
       try {
         const token = localStorage.getItem('auth_token');
-        const response = await axios.get('http://localhost:5000/api/dashboard/stats', {
+        const response = await axios.get(`${import.meta.env.VITE_API_URL || 'http://localhost:5000/api'}/dashboard/stats`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
