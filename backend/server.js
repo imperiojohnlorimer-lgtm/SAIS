@@ -30,7 +30,11 @@ const app = express();
 
 // Middleware
 app.use(cors({
-  origin: process.env.CLIENT_URL || 'http://localhost:5173',
+  origin: [
+    'https://sais-qx9k.vercel.app',
+    'https://sais-qx9k-cxar0y3mm-imperiojohnlorimer-5453s-projects.vercel.app',
+    'http://localhost:5173'
+  ],
   credentials: true,
   allowedHeaders: ['Content-Type', 'Authorization'],
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
