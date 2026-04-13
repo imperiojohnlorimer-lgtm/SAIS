@@ -22,24 +22,32 @@ export const getDashboardStats = async (req, res) => {
     const tomorrow = new Date(today);
     tomorrow.setDate(tomorrow.getDate() + 1);
 
-    const activeToday = await Attendance.countDocuments({
+    const activeTodayRecords = await Attendance.find({
       createdAt: { $gte: today, $lt: tomorrow }
-    });
+    }).populate('studentId', '_id').lean();
+    const activeToday = activeTodayRecords.filter(r => r.studentId !== null).length;
 
     // Get pending reports (reports with status 'Pending')
     const pendingReports = await Report.countDocuments({ status: 'Pending' });
 
-    // Get recent attendance records (last 5)
+    // Get recent attendance records (last 5), only those with a valid student
     const recentAttendance = await Attendance.find()
       .populate('studentId', 'name')
       .sort({ createdAt: -1 })
-      .limit(5)
+      .limit(20)
       .lean();
 
-    // Calculate average hours per week (from completed attendance records with timeOut)
-    const attendanceRecords = await Attendance.find({ timeOut: { $exists: true, $ne: null } });
+    // Filter out records where the student has been deleted (studentId is null after populate)
+    const validRecentAttendance = recentAttendance
+      .filter(record => record.studentId !== null)
+      .slice(0, 5);
+
+    // Calculate average hours per week (from completed attendance records with timeOut, valid students only)
+    const attendanceRecords = await Attendance.find({ timeOut: { $exists: true, $ne: null } })
+      .populate('studentId', '_id').lean();
+    const validAttendanceRecords = attendanceRecords.filter(r => r.studentId !== null);
     let totalHours = 0;
-    attendanceRecords.forEach(record => {
+    validAttendanceRecords.forEach(record => {
       if (record.timeIn && record.timeOut) {
         const inTime = new Date(record.timeIn);
         const outTime = new Date(record.timeOut);
@@ -47,7 +55,7 @@ export const getDashboardStats = async (req, res) => {
         totalHours += hours;
       }
     });
-    const averageHoursPerWeek = attendanceRecords.length > 0 ? (totalHours / Math.ceil(attendanceRecords.length / 7)).toFixed(1) : 0;
+    const averageHoursPerWeek = validAttendanceRecords.length > 0 ? (totalHours / Math.ceil(validAttendanceRecords.length / 7)).toFixed(1) : 0;
 
     // Get user counts by role
     const adminCount = await User.countDocuments({ role: 'Admin' });
@@ -67,7 +75,7 @@ export const getDashboardStats = async (req, res) => {
           pendingReports,
           averageHoursPerWeek,
         },
-        recentAttendance: recentAttendance.map(record => ({
+        recentAttendance: validRecentAttendance.map(record => ({
           id: record._id,
           studentName: record.studentId?.name || 'Unknown',
           studentId: record.studentId?._id,

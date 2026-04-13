@@ -1,5 +1,6 @@
 import User from '../models/User.js';
 import Student from '../models/Student.js';
+import Attendance from '../models/Attendance.js';
 
 // Get all users
 export const getAllUsers = async (req, res) => {
@@ -166,6 +167,11 @@ export const deleteUser = async (req, res) => {
       if (student) {
         await Attendance.deleteMany({ studentId: student._id });
       }
+      // Also delete any orphaned attendance records linked directly to the user
+      await Attendance.deleteMany({ userId: id });
+    } else {
+      // For Admins/Supervisors, delete any attendance records linked to this user
+      await Attendance.deleteMany({ userId: id });
     }
 
     res.status(200).json({

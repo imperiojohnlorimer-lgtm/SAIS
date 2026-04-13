@@ -569,6 +569,7 @@ export default function App() {
   const handleDeleteUser = (id) => {
     setUsers(users.filter(u => u.id !== id));
     setStudents(students.filter(s => s.userId !== id));
+    setAttendance(attendance.filter(a => a.userId !== id && a.user?._id !== id && a.user?.id !== id));
   };
 
   const handleLogin = (user) => {
