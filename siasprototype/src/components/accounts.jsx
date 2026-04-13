@@ -603,7 +603,7 @@ export const Accounts = ({ users, onAddUser, onDeleteUser, onViewProfile, onRole
                 </button>
                 <button 
                   type="button"
-                  onClick={() => handleDeleteUser(deleteConfirm.id || deleteConfirm._id, deleteConfirm.name)}
+                  onClick={() => handleDeleteUser(deleteConfirm._id || deleteConfirm.id, deleteConfirm.name)}
                   className="flex-1 px-4 py-2.5 bg-red-600 text-white rounded-xl font-bold text-sm hover:bg-red-700 transition-colors"
                 >
                   Delete Account
