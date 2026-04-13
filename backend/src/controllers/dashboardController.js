@@ -8,8 +8,13 @@ export const getDashboardStats = async (req, res) => {
   try {
     const startTime = Date.now();
 
-    // Get total students (with Student Assistant role)
-    const totalStudents = await Student.countDocuments();
+    // Get total students - only count students with valid linked User accounts
+    const allStudents = await Student.find().populate({
+      path: "userId",
+      select: "_id role",
+      match: { role: "Student Assistant" }
+    }).lean();
+    const totalStudents = allStudents.filter(s => s.userId !== null).length;
 
     // Get active students today (students with attendance records today)
     const today = new Date();
@@ -70,14 +75,8 @@ export const getDashboardStats = async (req, res) => {
             month: 'short',
             day: 'numeric'
           }) : '',
-          timeIn: record.timeIn ? new Date(record.timeIn).toLocaleTimeString('en-US', {
-            hour: '2-digit',
-            minute: '2-digit'
-          }) : '--:--',
-          timeOut: record.timeOut ? new Date(record.timeOut).toLocaleTimeString('en-US', {
-            hour: '2-digit',
-            minute: '2-digit'
-          }) : '--:--',
+          timeIn: record.timeIn || '--:--',
+          timeOut: record.timeOut || '--:--',
         })),
         userCounts: {
           admins: adminCount,

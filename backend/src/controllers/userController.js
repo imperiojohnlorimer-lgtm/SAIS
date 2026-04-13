@@ -160,6 +160,14 @@ export const deleteUser = async (req, res) => {
       });
     }
 
+    // Also delete the student record and attendance records if user was a Student Assistant
+    if (user.role === 'Student Assistant') {
+      const student = await Student.findOneAndDelete({ userId: id });
+      if (student) {
+        await Attendance.deleteMany({ studentId: student._id });
+      }
+    }
+
     res.status(200).json({
       success: true,
       message: 'User deleted successfully',
