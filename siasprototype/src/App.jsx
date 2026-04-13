@@ -680,24 +680,23 @@ export default function App() {
     }
   };
 
-  const handleRegister = (user) => {
+  const handleRegister = async (user) => {
     // User data comes from backend API response
     setUsers([...users, user]);
 
     if (user.role === 'Student Assistant') {
-      const newStudent = {
-        id: (students.length + 1).toString(),
-        userId: user.id,
-        name: user.name,
-        email: user.email,
-        department: user.department,
-        status: 'Active',
-        totalHours: 0,
-        phone: user.phone || '',
-        address: user.address || '',
-        avatar: user.avatar
-      };
-      setStudents([...students, newStudent]);
+      try {
+        // Fetch the real student record from the backend instead of creating a fake one
+        const token = localStorage.getItem('auth_token');
+        const response = await axios.get(`${API_BASE_URL}/students/me`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        if (response.data.data) {
+          setStudents([...students, response.data.data]);
+        }
+      } catch (error) {
+        console.error('Failed to fetch new student record:', error);
+      }
     }
     
     setCurrentUser(user);
