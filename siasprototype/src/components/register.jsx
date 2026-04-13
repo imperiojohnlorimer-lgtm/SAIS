@@ -106,31 +106,31 @@ export const Register = ({ onRegister, onBackToLogin }) => {
   return (
     <div className="h-screen w-screen bg-white flex flex-row overflow-hidden">
       {/* Left Side - Form */}
-      <div className="w-full md:w-1/2 bg-white flex items-center justify-center p-4 md:p-8">
+      <div className="w-full md:w-1/2 bg-white flex items-start justify-center p-4 md:p-6 overflow-y-auto">
         <motion.div
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
-          className="w-full max-w-md"
+          className="w-full max-w-md py-4"
         >
-          <div className="text-center mb-8">
+          <div className="text-center mb-4">
             <motion.div
               animate={{ y: [0, -10, 0] }}
               transition={{ duration: 4, repeat: Infinity }}
-              className="w-20 h-20 mx-auto mb-4 rounded-full overflow-hidden shadow-xl"
+              className="w-14 h-14 mx-auto mb-3 rounded-full overflow-hidden shadow-xl"
             >
               <img src="/university-seal.jpg" alt="University Logo" className="w-full h-full object-cover" />
             </motion.div>
-            <h1 className="text-3xl font-bold text-slate-900">Create Account</h1>
+            <h1 className="text-2xl font-bold text-slate-900">Create Account</h1>
             <p className="text-slate-600 mt-2 text-sm">Join SIAS - Student Assistant Information System</p>
           </div>
 
-          <Card className="p-8 bg-white border border-slate-200 shadow-xl">
+          <Card className="p-6 bg-white border border-slate-200 shadow-xl">
             {error && (
               <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg">
                 <p className="text-sm text-red-700 font-medium">{error}</p>
               </div>
             )}
-            <form onSubmit={handleSubmit} className="space-y-4">
+            <form onSubmit={handleSubmit} className="space-y-3">
               <div>
                 <label className="block text-xs font-bold text-slate-700 mb-2 uppercase tracking-wide">
                   Full Name
@@ -246,7 +246,7 @@ export const Register = ({ onRegister, onBackToLogin }) => {
               </button>
             </form>
 
-            <div className="mt-8 pt-6 border-t border-slate-200 text-center">
+            <div className="mt-4 pt-4 border-t border-slate-200 text-center">
               <button 
                 onClick={onBackToLogin}
                 className="text-xs font-bold text-slate-600 hover:text-maroon-600 transition"

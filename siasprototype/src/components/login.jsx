@@ -95,11 +95,11 @@ export const Login = ({ onShowRegister, onLogin }) => {
   return (
     <div className="h-screen w-screen bg-white flex flex-row overflow-hidden">
       {/* Left Side - Form */}
-      <div className="w-full md:w-1/2 bg-white flex items-center justify-center p-4 md:p-8">
+      <div className="w-full md:w-1/2 bg-white flex items-start justify-center p-4 md:p-8 overflow-y-auto">
         <motion.div
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
-          className="w-full max-w-md"
+          className="w-full max-w-md py-4"
         >
           <div className="text-center mb-10">
             <motion.div
