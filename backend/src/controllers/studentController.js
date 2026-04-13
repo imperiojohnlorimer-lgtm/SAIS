@@ -14,27 +14,26 @@ export const getAllStudents = async (req, res) => {
     const parsedPage = Math.max(parseInt(page), 1);
     const skip = (parsedPage - 1) * parsedLimit;
     
-    // Get students and total count in parallel
-    const [students, total] = await Promise.all([
-      Student.find(filter)
-        .populate({
-          path: 'userId',
-          select: 'name email role department phone address avatar',
-          match: { role: 'Student Assistant' }  // Only get Student Assistant users
-        })
-        .skip(skip)
-        .limit(parsedLimit)
-        .lean(),  // Use lean() for read-only queries (faster, less memory)
-      Student.countDocuments(filter)  // Get accurate count from DB
-    ]);
+    // Get all students with populated user data
+    const allStudents = await Student.find(filter)
+      .populate({
+        path: 'userId',
+        select: 'name email role department phone address avatar'
+      })
+      .sort({ createdAt: -1 })
+      .lean();
     
-    // Filter out students where the referenced user doesn't exist
-    const validStudents = students.filter(s => s.userId !== null);
+    // Filter out students where the referenced user doesn't exist or is not a Student Assistant
+    const validStudents = allStudents.filter(s => s.userId !== null && s.userId.role === 'Student Assistant');
+    
+    // Apply pagination after filtering
+    const total = validStudents.length;
+    const paginatedStudents = validStudents.slice(skip, skip + parsedLimit);
 
     res.status(200).json({
       success: true,
       message: 'Students fetched successfully',
-      data: validStudents,
+      data: paginatedStudents,
       pagination: {
         total,
         page: parsedPage,

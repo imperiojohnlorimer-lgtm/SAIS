@@ -109,7 +109,7 @@ export default function App() {
       }
     };
 
-    if (activeTab === 'accounts') {
+    if (activeTab === 'accounts' || refreshKey > 0) {
       fetchUsers();
     }
   }, [activeTab, isAuthenticated, role, refreshKey]);
@@ -149,7 +149,7 @@ export default function App() {
       }
     };
 
-    if (activeTab === 'students' || activeTab === 'attendance' || activeTab === 'tasks') {
+    if (activeTab === 'students' || activeTab === 'attendance' || activeTab === 'tasks' || refreshKey > 0) {
       fetchStudents();
     }
   }, [activeTab, isAuthenticated, refreshKey]);
