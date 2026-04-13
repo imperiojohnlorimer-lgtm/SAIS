@@ -25,6 +25,7 @@ const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api'
 
 export default function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [refreshKey, setRefreshKey] = useState(0);
   const [isRegistering, setIsRegistering] = useState(false);
   const [currentUser, setCurrentUser] = useState(null);
   const [viewedUser, setViewedUser] = useState(null);
@@ -111,7 +112,7 @@ export default function App() {
     if (activeTab === 'accounts') {
       fetchUsers();
     }
-  }, [activeTab, isAuthenticated, role]);
+  }, [activeTab, isAuthenticated, role, refreshKey]);
 
   // Fetch students from API
   useEffect(() => {
@@ -151,7 +152,7 @@ export default function App() {
     if (activeTab === 'students' || activeTab === 'attendance' || activeTab === 'tasks') {
       fetchStudents();
     }
-  }, [activeTab, isAuthenticated]);
+  }, [activeTab, isAuthenticated, refreshKey]);
 
   // Fetch attendance from API
   useEffect(() => {
@@ -703,6 +704,7 @@ export default function App() {
     setRole(user.role);
     setIsAuthenticated(true);
     setIsRegistering(false);
+    setRefreshKey(prev => prev + 1);
   };
 
   // Filter data based on role and department
