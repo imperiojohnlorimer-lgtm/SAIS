@@ -93,7 +93,7 @@ export default function App() {
           abortControllersRef.current.users = controller;
 
           const token = localStorage.getItem('auth_token');
-          const response = await axios.get(`${API_BASE_URL}/users`, {
+          const response = await axios.get(`${API_BASE_URL}/users?limit=100`, {
             headers: { Authorization: `Bearer ${token}` },
             signal: controller.signal,
             timeout: 30000
